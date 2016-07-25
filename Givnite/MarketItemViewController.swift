@@ -42,11 +42,9 @@ class MarketItemViewController: UIViewController {
     var name: String?
     var userID: String?
     var bkdescription: String?
-    var firstTimeUsed:Bool?
     
     
-    
-    var searchedBook: String = ""
+ 
     
     //CHAT ADDITION
     //CHAT ADDITION
@@ -211,7 +209,9 @@ class MarketItemViewController: UIViewController {
                     
                 }
                 
-                imageView.image =  imageList[imageIndex]
+                if imageIndex >= 0 {
+                    imageView.image =  imageList[imageIndex]
+                }
                 
             case UISwipeGestureRecognizerDirection.Left:
             
@@ -231,8 +231,9 @@ class MarketItemViewController: UIViewController {
                     self.pageControl.currentPage = 0
                     
                 }
-                print(imageList)
-                imageView.image = imageList[imageIndex]
+                if imageIndex <= imageList.count && imageList.count > 0 {
+                    imageView.image = imageList[imageIndex]
+                }
             default:
                 break //stops the code/codes nothing.
             }
@@ -326,11 +327,10 @@ class MarketItemViewController: UIViewController {
             transition.subtype = kCATransitionFromBottom
             view.window!.layer.addAnimation(transition, forKey: kCATransition)
             
-            destinationVC.firstTimeUse = self.firstTimeUsed!
             destinationVC.imageNameArray = self.imageNameArray
             destinationVC.imageArray = self.imageArray
             destinationVC.userArray = self.userArray
-            destinationVC.searchedBook = self.searchedBook
+      
             
             
         }else if segue.identifier == "shortCutChat"{
@@ -356,8 +356,7 @@ class MarketItemViewController: UIViewController {
             profileVC.marketVC = true
             profileVC.userID = self.userID
             profileVC.savedImageName = self.imageName
-            profileVC.searchedBook = self.searchedBook
-            profileVC.marketImageNameArray = self.imageNameArray
+        
         }
     }
 }

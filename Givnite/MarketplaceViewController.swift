@@ -31,25 +31,25 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
     var userArray = [String]()
     var descriptionArray = [String]()
     
-    var firstTimeUse: Bool = true
-    
-    var searchedBook: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(firstTimeUse)
-        print(imageArray)
-
-        if self.firstTimeUse == true {
-            self.imageNameArray.removeAll()
-            self.imageArray.removeAll()
-            
+        if let array = NSCache.sharedInstance.objectForKey("imageNameArray") as? [String] {
+            imageNameArray = array
         }
+        
+        print(imageNameArray)
+
+        self.imageArray.removeAll()
+
+        
+        
         self.userArray.removeAll()
         self.bookNameArray.removeAll()
         self.bookPriceArray.removeAll()
         self.descriptionArray.removeAll()
+        
         
         loadImages()
         
@@ -59,13 +59,13 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
         
         searchBarText.delegate = self
         
-        if searchedBook != "" {
-            searchBarText.text = searchedBook
+        if let search = NSCache.sharedInstance.objectForKey("search") as? String {
+            searchBarText.text = search
         }
     }
     
     func unwindToProfile(){
-        print(123123)
+       
         self.performSegueWithIdentifier("backToProfile", sender: self)
 
     }
@@ -77,8 +77,10 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         if (searchText.characters.count == 0) {
             searchBar.performSelector("resignFirstResponder", withObject: nil, afterDelay: 0.1)
-            self.firstTimeUse = true
-            searchedBook = ""
+
+            NSCache.sharedInstance.removeObjectForKey("imageNameArray")
+            NSCache.sharedInstance.removeObjectForKey("search")
+            self.imageNameArray.removeAll()
             viewDidLoad()
         }
     
@@ -88,16 +90,20 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
       
         dataRef.child("user").child(user!.uid).child("query").setValue(searchBarText.text)
         searchBarText.resignFirstResponder()
-        searchedBook = self.searchBarText.text!
+        NSCache.sharedInstance.removeObjectForKey("search")
+        NSCache.sharedInstance.setObject(searchBarText.text!, forKey: "search")
         dataRef.child("user").child(user!.uid).child("queryres").observeEventType(.ChildChanged, withBlock: {(snapshot) -> Void in
             self.updateTheCell()
         })
+        self.updateTheCell()
     }
 
     
     func updateTheCell(){
         dataRef.child("user").child(user!.uid).child("queryres").observeSingleEventOfType(.Value, withBlock: { (snapshot)
             in
+            
+            NSCache.sharedInstance.removeObjectForKey("imageNameArray")
         
             if let topSearches = snapshot.value! as? NSArray {
 
@@ -110,8 +116,6 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
                     }
                 }
             }
-
-            self.firstTimeUse = false
             self.viewDidLoad()
         })
     }
@@ -134,75 +138,77 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
         dataRef.child("marketplace").observeSingleEventOfType(.Value, withBlock: { (snapshot)
             in
             
-            
-         
-            
-            //adds image name from firebase database to an array
-            
             if let itemDictionary = snapshot.value! as? NSDictionary {
+            
+                if let array = NSCache.sharedInstance.objectForKey("imageNameArray") as? [String] {
+                    self.imageNameArray = array
+                }
+            
+                    //adds image name from firebase database to an array
+            
+                else {
                 
-                if self.firstTimeUse == true {
+                    if self.imageNameArray.count == 0{
                    
-                    var timeArray = [Int]()
+                        var timeArray = [Int]()
                     
-                    
-                    for key in itemDictionary.allKeys {
-                        if let keyDictionary = itemDictionary["\(key)"] as? NSDictionary {
-                            if let time = keyDictionary["time"] {
-                                let time2 = time as! Int
-                                timeArray.append(time2)
-                            }
-                        }
-                    }
-                    timeArray = timeArray.sort().reverse()
-                    
-                    
-                    for time in timeArray {
                         for key in itemDictionary.allKeys {
                             if let keyDictionary = itemDictionary["\(key)"] as? NSDictionary {
-                                if let time2 = keyDictionary["time"]{
-                                    if time == time2 as! Int {
-                                        self.imageNameArray.append("\(key)")
-                                        if let searchable = keyDictionary["searchable"] as? NSDictionary {
-                                            if let bookName = searchable["book name"] as? String {
-                                                self.bookNameArray.append(bookName)
+                                if let time = keyDictionary["time"] {
+                                    let time2 = time as! Int
+                                    timeArray.append(time2)
+                                }
+                            }
+                        }
+                        timeArray = timeArray.sort().reverse()
+                    
+                    
+                        for time in timeArray {
+                            for key in itemDictionary.allKeys {
+                                if let keyDictionary = itemDictionary["\(key)"] as? NSDictionary {
+                                    if let time2 = keyDictionary["time"]{
+                                        if time == time2 as! Int {
+                                            self.imageNameArray.append("\(key)")
+                                            if let searchable = keyDictionary["searchable"] as? NSDictionary    {
+                                                if let bookName = searchable["book name"] as? String {
+                                                    self.bookNameArray.append(bookName)
+                                                }
+                                                else {
+                                                    self.bookNameArray.append("")
+                                                }
+                                                if let bookDescription  = searchable["description"] as? String {
+                                                    self.descriptionArray.append(bookDescription)
+                                                }
+                                                else {
+                                                    self.descriptionArray.append("")
+                                                }
                                             }
                                             else {
                                                 self.bookNameArray.append("")
-                                            }
-                                            if let bookDescription  = searchable["description"] as? String {
-                                                self.descriptionArray.append(bookDescription)
-                                            }
-                                            else {
                                                 self.descriptionArray.append("")
                                             }
-                                        }
-                                        else {
-                                            self.bookNameArray.append("")
-                                            self.descriptionArray.append("")
-                                        }
-                                        if let bookPrice = keyDictionary["price"] as? String {
-                                            self.bookPriceArray.append(bookPrice)
-                                        }
-                                        else {
-                                            self.bookPriceArray.append("")
-                                        }
-                                        if let userID = keyDictionary["user"] as? String {
-                                            self.userArray.append(userID)
-                                        }
+                                            if let bookPrice = keyDictionary["price"] as? String {
+                                                self.bookPriceArray.append(bookPrice)
+                                            }
+                                            else {
+                                                self.bookPriceArray.append("")
+                                            }
+                                            if let userID = keyDictionary["user"] as? String {
+                                                self.userArray.append(userID)
+                                            }
                                         
-                                    }
+                                        }
                                     
+                                    }
                                 }
                             }
-                            
                         }
                     }
-
                 }
-                else {
-                    for image in self.imageNameArray {
-                   
+
+                for image in self.imageNameArray {
+                    
+                    if self.imageNameArray.count != 0 {
                         if let keyDictionary = itemDictionary[image] as? NSDictionary {
                             if let searchable = keyDictionary["searchable"] as? NSDictionary {
                                 if let bookName = searchable["book name"] as? String {
@@ -222,7 +228,6 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
                                 self.bookNameArray.append("")
                                 self.descriptionArray.append("")
                             }
-
                             if let bookPrice = keyDictionary["price"] as? String {
                                 self.bookPriceArray.append(bookPrice)
                             }
@@ -232,20 +237,18 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
                             if let userID = keyDictionary["user"] as? String {
                                 self.userArray.append(userID)
                             }
-                            
                         }
                     }
                 }
             }
-           
-            
             for index in 0..<self.imageNameArray.count {
                 self.imageArray.append(UIImage(named: "Examples")!)
             }
             
-            print(self.imageArray)
+            NSCache.sharedInstance.setObject(self.imageNameArray, forKey: "imageNameArray")
+
             
-            print(123123)
+        
             dispatch_async(dispatch_get_main_queue(),{
                 self.collectionView.reloadData()
             })
@@ -430,15 +433,7 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
             destinationVC.userID = self.userArray[indexPath.row]
             
             destinationVC.bkdescription = self.descriptionArray[indexPath.row]
-            
-            destinationVC.firstTimeUsed = self.firstTimeUse
-            
-            destinationVC.imageNameArray = self.imageNameArray
-            
-            destinationVC.imageArray = self.imageArray
-            
-            destinationVC.searchedBook = self.searchBarText.text!
-            
+        
         }
         
         if segue.identifier == "showProfile" {
@@ -456,6 +451,7 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
             destinationVC.userID = self.userID
         
             destinationVC.otherUser = true
+
         }
     
     }

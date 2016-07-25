@@ -55,8 +55,8 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
     //from market item VC
     var marketVC: Bool = false
     var savedImageName: String?
-    var searchedBook: String?
-    var marketImageNameArray = [String]()
+ 
+    
     
     //CHAT ADDITION
     //CHAT ADDITION
@@ -358,9 +358,7 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
             if marketVC == true {
                 destinationVC.marketVC = true
                 destinationVC.savedImageName = self.savedImageName
-                destinationVC.searchedBook = self.searchedBook
-                destinationVC.marketImageNameArray = self.marketImageNameArray
-
+              
             }
         }
         
@@ -382,12 +380,6 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
             let destinationVC = segue.destinationViewController as! MarketItemViewController
             destinationVC.userID = self.userID
             destinationVC.imageName = self.savedImageName
-            destinationVC.firstTimeUsed = true
-            if marketVC == true {
-                destinationVC.searchedBook = self.searchedBook!
-                destinationVC.firstTimeUsed = false
-                destinationVC.imageNameArray = self.marketImageNameArray
-            }
         }
     }
     
