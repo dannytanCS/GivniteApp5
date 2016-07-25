@@ -40,6 +40,7 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
         
         print(firstTimeUse)
         print(imageArray)
+
         if self.firstTimeUse == true {
             self.imageNameArray.removeAll()
             self.imageArray.removeAll()
@@ -241,6 +242,10 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
             for index in 0..<self.imageNameArray.count {
                 self.imageArray.append(UIImage(named: "Examples")!)
             }
+            
+            print(self.imageArray)
+            
+            print(123123)
             dispatch_async(dispatch_get_main_queue(),{
                 self.collectionView.reloadData()
             })
@@ -278,8 +283,9 @@ class MarketplaceViewController: UIViewController, UICollectionViewDelegate, UIC
            
             if let image = NSCache.sharedInstance.objectForKey(imageName) as? UIImage {
                 cell.itemImageView.image = image
-                print(imageArray)
-                self.imageArray[indexPath.row] = image
+                if imageArray.count > indexPath.row {
+                    self.imageArray[indexPath.row] = image
+                }
             }
                 
             else {

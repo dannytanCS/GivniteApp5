@@ -56,6 +56,7 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
     var marketVC: Bool = false
     var savedImageName: String?
     var searchedBook: String?
+    var marketImageNameArray = [String]()
     
     //CHAT ADDITION
     //CHAT ADDITION
@@ -358,6 +359,8 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
                 destinationVC.marketVC = true
                 destinationVC.savedImageName = self.savedImageName
                 destinationVC.searchedBook = self.searchedBook
+                destinationVC.marketImageNameArray = self.marketImageNameArray
+
             }
         }
         
@@ -382,6 +385,8 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
             destinationVC.firstTimeUsed = true
             if marketVC == true {
                 destinationVC.searchedBook = self.searchedBook!
+                destinationVC.firstTimeUsed = false
+                destinationVC.imageNameArray = self.marketImageNameArray
             }
         }
     }

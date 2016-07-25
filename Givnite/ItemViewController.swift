@@ -36,6 +36,7 @@ class ItemViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
     var savedImageName: String?
     var marketVC: Bool = false
     var searchedBook: String?
+    var marketImageNameArray = [String]()
     
     
     
@@ -235,6 +236,8 @@ class ItemViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
                 destinationVC.marketVC = true
                 destinationVC.savedImageName = self.savedImageName
                 destinationVC.searchedBook = self.searchedBook
+                destinationVC.marketImageNameArray = self.marketImageNameArray
+
             }
         }
           

@@ -177,6 +177,8 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate, UITextVi
             }
             
             self.databaseRef.child("user").child(self.user!.uid).child("items").child(self.imageName).removeValue()
+            self.databaseRef.child("marketplace").child(self.imageName).removeValue()
+
             
             let profileViewController: UIViewController = self.storyboard!.instantiateViewControllerWithIdentifier("profile")
             self.presentViewController(profileViewController, animated: false, completion: nil)

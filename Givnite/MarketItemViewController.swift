@@ -357,6 +357,7 @@ class MarketItemViewController: UIViewController {
             profileVC.userID = self.userID
             profileVC.savedImageName = self.imageName
             profileVC.searchedBook = self.searchedBook
+            profileVC.marketImageNameArray = self.imageNameArray
         }
     }
 }
