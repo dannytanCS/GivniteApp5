@@ -163,26 +163,23 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
             foundCode(readableObject.stringValue);
         }
-        
-        dismissViewControllerAnimated(true, completion: nil)
+         self.performSegueWithIdentifier("addDescription", sender: self)
     }
     
     func foundCode(code: String) {
         print(code)
-        ISBN = code
+        databaseRef.child("marketplace").child(imageName).child("isbn").setValue(code)
+
     }
     
-
+    let imageName = NSUUID().UUIDString
     
     
     
     //adds image to firebase
     func addImageToFirebase(image: UIImage)
     {
-        let imageName = NSUUID().UUIDString
         self.nameOfImage = imageName
-        self.findsISBN()
-
         let profilePicRef = storageRef.child(imageName).child("\(imageName).jpg")
 
         databaseRef.child("user").child("\(user!.uid)/items/\(imageName)").setValue(FIRServerValue.timestamp())
@@ -191,14 +188,13 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
         databaseRef.child("marketplace").child(imageName).child("user").setValue(user!.uid)
         databaseRef.child("marketplace").child(imageName).child("major").setValue(major)
         databaseRef.child("marketplace").child(imageName).child("school").setValue(school)
-        databaseRef.child("marketplace").child(imageName).child("isbn").setValue(ISBN)
         if let uploadData = UIImageJPEGRepresentation(image, 0){
             profilePicRef.putData(uploadData, metadata: nil, completion: { (meta, error) in
                 if error != nil {
                     print (error)
                 }
                 else{
-                    self.performSegueWithIdentifier("addDescription", sender: self)
+                    self.findsISBN()
                 }
             })
         }
