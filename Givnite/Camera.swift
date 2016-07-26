@@ -12,7 +12,7 @@ import FirebaseAuth
 import FirebaseStorage
 import FirebaseDatabase
 
-class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AVCaptureMetadataOutputObjectsDelegate {
     
     
     var captureSession: AVCaptureSession?
@@ -27,6 +27,11 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     
     var school: String?
     var major:String?
+    
+    let user = FIRAuth.auth()?.currentUser
+    let storageRef = FIRStorage.storage().referenceForURL("gs://givniteapp.appspot.com")
+    let databaseRef = FIRDatabase.database().referenceFromURL("https://givniteapp.firebaseio.com/")
+
 
     
     @IBOutlet weak var photoLibraryButton: UIButton!
@@ -119,25 +124,74 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     }
     
     
+    //isbn
+    
+    @IBOutlet weak var scanLabel: UILabel!
+    var ISBN:String?
+    
+    func findsISBN(){
+        
+        self.scanLabel.hidden = false
+        let metadataOutput = AVCaptureMetadataOutput()
+        
+        if (captureSession!.canAddOutput(metadataOutput)) {
+            captureSession!.addOutput(metadataOutput)
+            
+            metadataOutput.setMetadataObjectsDelegate(self, queue: dispatch_get_main_queue())
+            metadataOutput.metadataObjectTypes = [AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypePDF417Code]
+        } else {
+            failed()
+            return
+        }
+    }
+    
+    
+    
+    func failed() {
+        let ac = UIAlertController(title: "Scanning not supported", message: "Your device does not support scanning a code from an item. Please use a device with a camera.", preferredStyle: .Alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+        presentViewController(ac, animated: true, completion: nil)
+        captureSession = nil
+    }
+    
+    func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
+        captureSession!.stopRunning()
+        
+        if let metadataObject = metadataObjects.first {
+            let readableObject = metadataObject as! AVMetadataMachineReadableCodeObject;
+            
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+            foundCode(readableObject.stringValue);
+        }
+        
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func foundCode(code: String) {
+        print(code)
+        ISBN = code
+    }
+    
+
+    
+    
+    
     //adds image to firebase
     func addImageToFirebase(image: UIImage)
     {
-        let user = FIRAuth.auth()?.currentUser
-        let storageRef = FIRStorage.storage().referenceForURL("gs://givniteapp.appspot.com")
-        let databaseRef = FIRDatabase.database().referenceFromURL("https://givniteapp.firebaseio.com/")
-        
         let imageName = NSUUID().UUIDString
         self.nameOfImage = imageName
-        
+        self.findsISBN()
+
         let profilePicRef = storageRef.child(imageName).child("\(imageName).jpg")
 
         databaseRef.child("user").child("\(user!.uid)/items/\(imageName)").setValue(FIRServerValue.timestamp())
         databaseRef.child("marketplace").child(imageName).child("images").child(imageName).setValue(FIRServerValue.timestamp())
         databaseRef.child("marketplace").child(imageName).child("time").setValue(FIRServerValue.timestamp())
         databaseRef.child("marketplace").child(imageName).child("user").setValue(user!.uid)
-         databaseRef.child("marketplace").child(imageName).child("major").setValue(major)
-         databaseRef.child("marketplace").child(imageName).child("school").setValue(school)
-        self.captureSession?.stopRunning()
+        databaseRef.child("marketplace").child(imageName).child("major").setValue(major)
+        databaseRef.child("marketplace").child(imageName).child("school").setValue(school)
+        databaseRef.child("marketplace").child(imageName).child("isbn").setValue(ISBN)
         if let uploadData = UIImageJPEGRepresentation(image, 0){
             profilePicRef.putData(uploadData, metadata: nil, completion: { (meta, error) in
                 if error != nil {
@@ -178,6 +232,7 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.scanLabel.hidden = true
 
     }
     

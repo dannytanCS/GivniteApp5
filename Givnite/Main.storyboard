@@ -867,6 +867,12 @@
                                     <action selector="photoLibrary:" destination="vZO-F9-SpX" eventType="touchUpInside" id="S11-QP-gin"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Scan your book" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QiI-7j-hc6">
+                                <rect key="frame" x="128" y="75" width="119" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -886,6 +892,7 @@
                     <connections>
                         <outlet property="imageView" destination="ROo-PD-UsK" id="3B2-Yj-Wgp"/>
                         <outlet property="photoLibraryButton" destination="NJ4-AP-UdJ" id="oiA-M1-96s"/>
+                        <outlet property="scanLabel" destination="QiI-7j-hc6" id="J1c-Vd-zx8"/>
                         <segue destination="ay0-LQ-yJ5" kind="modal" identifier="addDescription" id="qa0-LJ-Xz1"/>
                     </connections>
                 </viewController>

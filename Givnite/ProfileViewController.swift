@@ -48,6 +48,9 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
     var otherUser: Bool = false
     
     
+    var placeHolderText: String = "placeholder"
+    
+    
     let screenSize = UIScreen.mainScreen().bounds
     
     
@@ -124,9 +127,6 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
         self.profilePicture.layer.borderColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1.0).CGColor
     
         
-        self.bioTextView.text = "placeholder"
-        self.bioTextView.textColor = UIColor.lightGrayColor()
-
     
         
         loadImages()
@@ -279,7 +279,7 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
     
     func textViewDidEndEditing(textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = "Placeholder"
+            textView.text = placeHolderText
             textView.textColor = UIColor.lightGrayColor()
         }
     }
@@ -468,7 +468,20 @@ class ProfileViewController: UIViewController, UITextViewDelegate,UICollectionVi
             }
             
             if let bioDescription = snapshot.value!["bio"] as? String {
-                self.bioTextView.text = bioDescription
+                if bioDescription == "" || bioDescription == self.placeHolderText{
+                    self.bioTextView.text = self.placeHolderText
+                    self.bioTextView.textColor = UIColor.lightGrayColor()
+                }
+                else {
+                
+                    self.bioTextView.text = bioDescription
+                    self.bioTextView.textColor = UIColor.blackColor()
+                }
+            }
+            else {
+                self.bioTextView.text = self.placeHolderText
+                self.bioTextView.textColor = UIColor.lightGrayColor()
+
             }
         })
     }
