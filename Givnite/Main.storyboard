@@ -1235,6 +1235,14 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JHV-JW-s2L">
                                 <rect key="frame" x="33" y="91" width="308" height="308"/>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lMB-pF-IpE">
+                                <rect key="frame" x="33" y="91" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B9t-Cj-n9y" userLabel="DescriptionView">
+                                <rect key="frame" x="33" y="91" width="308" height="308"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -1488,7 +1496,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8f8-dE-URZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1896.5" y="2470.5"/>
+            <point key="canvasLocation" x="2012.5" y="2484.5"/>
         </scene>
         <!--Market Item View Controller-->
         <scene sceneID="vKG-2n-Yy4">
@@ -1715,10 +1723,10 @@
         <image name="Trash" width="81" height="84"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Ldv-4t-Rae"/>
         <segue reference="Nm1-oM-csR"/>
-        <segue reference="rF6-7x-mK6"/>
+        <segue reference="zUB-R1-gCs"/>
         <segue reference="4FE-Dr-Dr8"/>
+        <segue reference="Ldv-4t-Rae"/>
         <segue reference="Mgg-ae-R6I"/>
     </inferredMetricsTieBreakers>
 </document>

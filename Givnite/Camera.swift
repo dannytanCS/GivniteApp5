@@ -68,9 +68,8 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
 
 
                     self.imageTaken = myimage
-                    self.addImageToFirebase(myimage)
-                    
-    
+                    self.image = myimage
+                    self.findsISBN()
                     
                 }
             })
@@ -119,7 +118,8 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         let image = info[UIImagePickerControllerOriginalImage] as? UIImage
         self.imageTaken = image!
-        addImageToFirebase(image!)
+        self.image = image!
+        self.findsISBN()
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -163,21 +163,22 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
             foundCode(readableObject.stringValue);
         }
-         self.performSegueWithIdentifier("addDescription", sender: self)
     }
     
     func foundCode(code: String) {
         print(code)
+        scanLabel.text = "Found your item!"
         databaseRef.child("marketplace").child(imageName).child("isbn").setValue(code)
+        addImageToFirebase()
 
     }
     
     let imageName = NSUUID().UUIDString
-    
+    var image = UIImage()
     
     
     //adds image to firebase
-    func addImageToFirebase(image: UIImage)
+    func addImageToFirebase()
     {
         self.nameOfImage = imageName
         let profilePicRef = storageRef.child(imageName).child("\(imageName).jpg")
@@ -188,13 +189,13 @@ class Camera: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
         databaseRef.child("marketplace").child(imageName).child("user").setValue(user!.uid)
         databaseRef.child("marketplace").child(imageName).child("major").setValue(major)
         databaseRef.child("marketplace").child(imageName).child("school").setValue(school)
-        if let uploadData = UIImageJPEGRepresentation(image, 0){
+        if let uploadData = UIImageJPEGRepresentation(self.image, 0){
             profilePicRef.putData(uploadData, metadata: nil, completion: { (meta, error) in
                 if error != nil {
                     print (error)
                 }
                 else{
-                    self.findsISBN()
+                     self.performSegueWithIdentifier("addDescription", sender: self)
                 }
             })
         }

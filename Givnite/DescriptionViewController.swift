@@ -37,6 +37,8 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate, UITextVi
     var maxImages: Int = 0
     
     var imageDict = [UIImage:AnyObject]()
+    
+    var placeHolderText = "placeholder"
 
     
     
@@ -53,7 +55,12 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate, UITextVi
     @IBAction func doneButtonClicked(sender: AnyObject) {
         databaseRef.child("marketplace").child(imageName).child("price").setValue(bookPrice.text)
         databaseRef.child("marketplace").child(imageName).child("searchable").child("book name").setValue(bookName.text)
-        databaseRef.child("marketplace").child(imageName).child("searchable").child("description").setValue(bookDescription.text)
+        if bookDescription.text == placeHolderText {
+            databaseRef.child("marketplace").child(imageName).child("searchable").child("description").setValue("")
+        }
+        else {
+            databaseRef.child("marketplace").child(imageName).child("searchable").child("description").setValue(bookDescription.text)
+        }
     }
     
     
@@ -282,7 +289,7 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate, UITextVi
         
         
         
-        self.bookDescription.text = "placeholder"
+        self.bookDescription.text = placeHolderText
         self.bookDescription.textColor = UIColor.lightGrayColor()
         
 
@@ -295,6 +302,25 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate, UITextVi
         swipeLeft.direction = UISwipeGestureRecognizerDirection.Left
         self.view.addGestureRecognizer(swipeLeft)
 
+        
+        databaseRef.child("marketplace").child(imageName).observeSingleEventOfType(.Value, withBlock: { (snapshot)
+            in
+            
+            if let itemDictionary = snapshot.value as? NSDictionary {
+                print(123123)
+                if let code = itemDictionary["isbn"] as? String {
+                    print(123123)
+                    if let searchable = itemDictionary["searchable"] as? NSDictionary {
+                         print(123123)
+                        if let bookName = searchable["title2"] as? String {
+                            self.bookName.text = bookName
+                        }
+                    }
+                }
+            
+            }
+            })
+        
         loadsImages()
     }
     
@@ -308,7 +334,7 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate, UITextVi
     
     func textViewDidEndEditing(textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = "Placeholder"
+            textView.text = placeHolderText
             textView.textColor = UIColor.lightGrayColor()
         }
     }
